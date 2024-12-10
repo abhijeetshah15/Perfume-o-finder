@@ -34,7 +34,7 @@ with st.container():
     city = st.text_input("Enter your City:", placeholder="e.g., New York")
 
     # Initialize variables with default values
-    temp, humidity, weather_desc = 25.0, 50, ""
+    temp, humidity, weather_desc = None, None, ""
 
     try:
         if city:
