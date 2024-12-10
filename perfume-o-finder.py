@@ -2,10 +2,9 @@ import streamlit as st
 import requests
 import pandas as pd
 from openai import OpenAI
-import config
 
 # OpenWeatherMap API Key
-weather_api_key = config.WEATHER_API_KEY
+weather_api_key = st.secrets["WEATHER_API_KEY"]
 
 # Title
 st.title("Perfume-o-finder")
@@ -108,7 +107,7 @@ if st.button("Get Recommendation"):
         """
         
         # ChatGPT API Call
-        client = OpenAI(api_key=config.OPENAI_API_KEY)
+        client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
         response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
