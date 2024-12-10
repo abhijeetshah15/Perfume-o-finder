@@ -65,15 +65,16 @@ city, temperature, humidity, weather_desc = get_weather()
 st.write(f"Weather in {city}: {temperature}°C, {humidity}% humidity, {weather_desc}")
 
 # File Upload
-uploaded_file = st.file_uploader("Upload your perfume list (CSV,XLSX format):")
+uploaded_file = st.file_uploader("Upload your perfume list (CSV, XLSX format):")
 perfume_list = []
+
 if uploaded_file:
     try:
         # Determine the file type and read accordingly
         if uploaded_file.name.endswith(".csv"):
             df = pd.read_csv(uploaded_file)
         elif uploaded_file.name.endswith(".xlsx"):
-            df = pd.read_excel(uploaded_file)
+            df = pd.read_excel(uploaded_file, engine='openpyxl')  # Ensure openpyxl is used for xlsx
 
         # Assuming the file has a column named 'perfumes'
         if "perfumes" in df.columns:
