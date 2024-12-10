@@ -9,13 +9,6 @@ weather_api_key = st.secrets["WEATHER_API_KEY"]
 # Title with emoji for fun
 st.title("🌟 Eau What Now? 🌟")
 
-# Sidebar for navigation
-st.sidebar.title("Navigation")
-st.sidebar.markdown("Use the sections below to navigate:")
-st.sidebar.markdown("- Weather Input")
-st.sidebar.markdown("- Upload Perfume List")
-st.sidebar.markdown("- Get Recommendation")
-
 # Main Instructions
 st.markdown(
     """
