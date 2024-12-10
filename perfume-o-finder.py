@@ -12,12 +12,7 @@ st.title("Perfume-o-finder")
 # Get Current Weather
 def get_weather():
     try:
-        # Fetch IP-based location
-        location = requests.get("https://ipinfo.io").json()
-        detected_city = location.get("city", "Unknown")
-
-        # Allow the user to edit detected city
-        city = st.text_input("Detected City (edit if incorrect):", value=detected_city)
+        city = st.text_input("Enter your City:")
 
         # Fetch weather data from API
         weather_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api_key}&units=metric"
