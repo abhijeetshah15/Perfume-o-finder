@@ -32,6 +32,10 @@ st.markdown("---")
 with st.container():
     st.subheader("🌦️ Weather Details")
     city = st.text_input("Enter your City:", placeholder="e.g., New York")
+
+    # Initialize variables with default values
+    temp, humidity, weather_desc = 25.0, 50, ""
+
     try:
         if city:
             # Fetch weather data
@@ -43,15 +47,15 @@ with st.container():
                 humidity = weather_data["main"]["humidity"]
                 weather_desc = weather_data["weather"][0]["description"]
             else:
-                temp, humidity, weather_desc = None, None, None
+                temp, humidity, weather_desc = 25.0, 50, ""  # Reset to default values if error
     except Exception:
-        temp, humidity, weather_desc = None, None, None
+        temp, humidity, weather_desc = 25.0, 50, ""  # Reset to default values in case of exception
 
     col1, col2 = st.columns(2)
     with col1:
-        temp = st.number_input("Temperature (°C):", value=temp if temp else 25.0, step=0.1)
+        temp = st.number_input("Temperature (°C):", value=temp, step=0.1)
     with col2:
-        humidity = st.number_input("Humidity (%):", value=humidity if humidity else 50, step=1)
+        humidity = st.number_input("Humidity (%):", value=humidity, step=1)
 
     weather_desc = st.text_input(
         "Weather Description:", value=weather_desc if weather_desc else "", placeholder="e.g., warm and sunny"
