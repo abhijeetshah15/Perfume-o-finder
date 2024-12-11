@@ -96,7 +96,6 @@ with st.container():
             st.session_state.perfume_list.append(manual_perfume)
             st.session_state.perfume_list = list(set(st.session_state.perfume_list))  # Remove duplicates
             st.success(f"Perfume '{manual_perfume}' added!")
-            st.session_state.manual_perfume_input = ""  # Clear input
         else:
             st.warning("Please enter a perfume name to add.")
 
