@@ -90,16 +90,23 @@ with st.container():
 
     # Add perfumes manually
     st.markdown("### Or Add Perfumes Manually:")
-    manual_perfume = st.text_input("Enter a perfume name and press 'Add':", key="manual_perfume_input")
+    manual_perfume = st.text_input(
+        "Enter a perfume name and press 'Add':", 
+        key="manual_perfume_input", 
+        placeholder="e.g., Chanel No. 5"
+    )
+    
     if st.button("Add Perfume"):
         if manual_perfume:
             st.session_state.perfume_list.append(manual_perfume)
             st.session_state.perfume_list = list(set(st.session_state.perfume_list))  # Remove duplicates
             st.success(f"Perfume '{manual_perfume}' added!")
-            st.experimental_set_query_params()  # Reset the input field
+    
+            # Clear the text input by resetting its session state
+            st.session_state.manual_perfume_input = ""
         else:
             st.warning("Please enter a perfume name to add.")
-
+    
     # Display current perfume list
     if st.session_state.perfume_list:
         st.markdown("### Current Perfume List:")
