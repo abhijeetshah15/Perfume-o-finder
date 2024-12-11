@@ -13,7 +13,7 @@ st.title("🌟 Eau What Now? 🌟")
 st.markdown(
     """
     ## 🛠️ How to Use:
-    1. **Upload** your perfume list as a **CSV** or **XLSX** file with columns `perfumes` and optionally `notes` (e.g., citrus, woody).
+    1. **Upload** your perfume list as a **CSV** or **XLSX** file with a column `perfumes`.
     2. Add any missing perfumes manually if needed.
     3. **Enter the city** and let the app fetch weather details for you.
     4. **Describe your event**, and we'll recommend the best perfume for you.
@@ -55,7 +55,7 @@ with st.container():
         humidity = st.number_input("Humidity (%):", value=humidity, step=1)
 
     weather_desc = st.text_input(
-        "Weather Description:", value=weather_desc if weather_desc else "", placeholder="e.g., warm and sunny"
+        "Weather Description (change if inaccurate):", value=weather_desc if weather_desc else "", placeholder="e.g., warm and sunny"
     )
 
     if not weather_desc:
@@ -76,14 +76,10 @@ with st.container():
             elif uploaded_file.name.endswith(".xlsx"):
                 df = pd.read_excel(uploaded_file, engine='openpyxl')
 
-            # Handle case-insensitive column matching for 'perfumes' and 'notes'
+            # Handle case-insensitive column matching for 'perfumes'
             df.columns = df.columns.str.lower()
             if "perfumes" in df.columns:
-                if "notes" in df.columns:
-                    file_perfumes = df[["perfumes", "notes"]].dropna().values.tolist()
-                else:
-                    file_perfumes = [(perfume, "") for perfume in df["perfumes"].dropna().tolist()]
-                
+                file_perfumes = df["perfumes"].dropna().tolist()
                 st.session_state.perfume_list.extend(file_perfumes)
                 st.session_state.perfume_list = list(set(st.session_state.perfume_list))  # Remove duplicates
                 st.success("Perfume list uploaded successfully!")
@@ -95,22 +91,20 @@ with st.container():
     # Add perfumes manually
     st.markdown("### Or Add Perfumes Manually:")
     manual_perfume = st.text_input("Enter a perfume name:", key="manual_perfume_input")
-    manual_notes = st.text_input("Enter the perfume notes (optional):", key="manual_notes_input")
     if st.button("Add Perfume"):
         if manual_perfume:
-            st.session_state.perfume_list.append((manual_perfume, manual_notes))
+            st.session_state.perfume_list.append(manual_perfume)
             st.session_state.perfume_list = list(set(st.session_state.perfume_list))  # Remove duplicates
             st.success(f"Perfume '{manual_perfume}' added!")
-            st.session_state.manual_perfume_input = ""  # Clear inputs
-            st.session_state.manual_notes_input = ""
+            st.session_state.manual_perfume_input = ""  # Clear input
         else:
             st.warning("Please enter a perfume name to add.")
 
     # Display current perfume list
     if st.session_state.perfume_list:
         st.markdown("### Current Perfume List:")
-        for perfume, notes in st.session_state.perfume_list:
-            st.write(f"- {perfume} ({notes})")
+        for perfume in st.session_state.perfume_list:
+            st.write(f"- {perfume}")
     else:
         st.info("No perfumes added yet. Upload a file or add perfumes manually.")
 
@@ -127,17 +121,16 @@ with st.container():
     if st.button("✨ Get Recommendation ✨"):
         if len(st.session_state.perfume_list) > 0 and event:
             # Formulate the ChatGPT query
-            perfume_details = [f"{perfume} (notes: {notes})" for perfume, notes in st.session_state.perfume_list]
+            perfume_details = ", ".join(st.session_state.perfume_list)
             message = f"""
-            I have these perfumes: {', '.join(perfume_details)}.
+            I have these perfumes: {perfume_details}.
             I am going to {event}. The current weather in {city} is {weather_desc} ({temp}°C, {humidity}% humidity).
             For temperatures below 15°C, prefer warm, spicy, or woody perfumes.
             For 15°C–25°C, prefer floral or citrus perfumes.
             For above 25°C, prefer light, fresh, or aquatic perfumes.
-            Focus on weather as the primary factor, event type as secondary, and perfume notes as tertiary.
-            But make sure you consider the event as well sunch as dinners, outings, and parties.
+            Focus on weather as the primary factor, event type as secondary.
             Provide one recommendation or a tie if necessary, with reasons for your choice.
-            Include specific application tips (e.g., pulse points, layering advice, and (mixing two fragrances only if necessary, no need to provide everytime)).
+            Include specific application tips (e.g., pulse points, layering advice, and mixing two fragrances only if necessary, no need to provide every time).
             """
 
             # ChatGPT API Call
@@ -150,7 +143,6 @@ with st.container():
                     Your job is to analyze a list of perfumes and recommend the most suitable option based on:
                     1. Weather (temperature, humidity, and general description).
                     2. Event type (formal, casual, or outdoor).
-                    3. Perfume notes (e.g., floral, woody, citrus, musky) and their compatibility with the conditions.
                     Avoid repetitive or ambiguous responses and provide consistent recommendations.
                     Also, include a brief explanation of your choice and how to apply the selected perfume for the best effect.
                     """},
