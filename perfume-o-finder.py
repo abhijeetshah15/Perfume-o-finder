@@ -88,26 +88,18 @@ with st.container():
         except Exception as e:
             st.error(f"Error reading the file: {e}")
 
-    # Function to reset manual perfume input
-    def reset_input():
-        st.session_state.manual_perfume_input = ""
-    
     # Add perfumes manually
     st.markdown("### Or Add Perfumes Manually:")
-    manual_perfume = st.text_input(
-        "Enter a perfume name and press 'Add':", 
-        key="manual_perfume_input", 
-        placeholder="e.g., Chanel No. 5"
-    )
-    
-    if st.button("Add Perfume", on_click=reset_input):
+    manual_perfume = st.text_input("Enter a perfume name and press 'Add':", key="manual_perfume_input")
+    if st.button("Add Perfume"):
         if manual_perfume:
             st.session_state.perfume_list.append(manual_perfume)
             st.session_state.perfume_list = list(set(st.session_state.perfume_list))  # Remove duplicates
             st.success(f"Perfume '{manual_perfume}' added!")
+            st.experimental_set_query_params()  # Reset the input field
         else:
             st.warning("Please enter a perfume name to add.")
-    
+
     # Display current perfume list
     if st.session_state.perfume_list:
         st.markdown("### Current Perfume List:")
