@@ -129,6 +129,8 @@ with st.container():
             For above 25°C, prefer light, fresh, or aquatic perfumes.
             Focus on weather as the primary factor, event type as secondary.
             Provide one recommendation or a tie if necessary, with reasons for your choice.
+            But make sure you consider the event as well. Do not only focus on the temperature.
+            For example, if it is a formal dinner it could be a nice dark fragrance and not a fresh one even if the temperature is between 15-25.
             Include specific application tips (e.g., pulse points, layering advice, and mixing two fragrances only if necessary, no need to provide every time).
             """
 
