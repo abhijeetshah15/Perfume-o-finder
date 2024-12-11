@@ -14,7 +14,7 @@ st.markdown(
     """
     ## 🛠️ How to Use:
     1. **Upload** your perfume list as a **CSV** or **XLSX** file.
-    2. Ensure the file has a column named **'Perfumes'**.
+    2. Add any missing perfumes manually if needed.
     3. **Enter the city** and let the app fetch weather details for you.
     4. **Describe your event**, and we'll recommend the best perfume for you.
     """
@@ -59,12 +59,13 @@ with st.container():
 
 st.markdown("---")
 
-# File Upload Section
+# File Upload and Manual Addition Section
 with st.container():
-    st.subheader("📂 Upload Your Perfume List")
+    st.subheader("📂 Upload or Add Your Perfume List")
     uploaded_file = st.file_uploader("Upload CSV or XLSX file:")
     perfume_list = []
 
+    # Process uploaded file
     if uploaded_file:
         try:
             if uploaded_file.name.endswith(".csv"):
@@ -77,15 +78,28 @@ with st.container():
             if "perfumes" in df.columns:
                 perfume_list = df["perfumes"].dropna().tolist()
                 st.success("Perfume list uploaded successfully!")
-                with st.expander("Click to view your uploaded perfumes list"):
-                    for perfume in perfume_list:
-                        st.write(f"- {perfume}")
             else:
                 st.error("The uploaded file must contain a column named 'perfumes'.")
         except Exception as e:
             st.error(f"Error reading the file: {e}")
+
+    # Add perfumes manually
+    st.markdown("### Or Add Perfumes Manually:")
+    manual_perfume = st.text_input("Enter a perfume name and press 'Add':", placeholder="e.g., Chanel No. 5")
+    if st.button("Add Perfume"):
+        if manual_perfume:
+            perfume_list.append(manual_perfume)
+            st.success(f"Perfume '{manual_perfume}' added!")
+        else:
+            st.warning("Please enter a perfume name to add.")
+
+    # Display current perfume list
+    if perfume_list:
+        st.markdown("### Current Perfume List:")
+        for perfume in perfume_list:
+            st.write(f"- {perfume}")
     else:
-        st.info("Please upload a file to proceed.")
+        st.info("No perfumes added yet. Upload a file or add perfumes manually.")
 
 st.markdown("---")
 
