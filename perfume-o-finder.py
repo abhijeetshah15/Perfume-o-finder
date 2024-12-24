@@ -1,9 +1,7 @@
-# Import necessary libraries
 import streamlit as st
 import requests
 import pandas as pd
 from openai import OpenAI
-import os
 
 # OpenWeatherMap API Key
 weather_api_key = st.secrets["WEATHER_API_KEY"]
@@ -26,26 +24,6 @@ st.markdown("---")
 # Initialize session state to store perfume list
 if "perfume_list" not in st.session_state:
     st.session_state.perfume_list = []
-
-# Load perfumes from two additional CSV files in the directory
-def load_additional_perfumes():
-    try:
-        # Update paths to your directory if needed
-        csv_files = ["datasets/mens_perfumes.csv", "datasets/womens_perfumes.csv"]
-        combined_perfumes = []
-
-        for file in csv_files:
-            if os.path.exists(file):
-                df = pd.read_csv(file)
-                if "title" in df.columns:
-                    combined_perfumes.extend(df["title"].dropna().tolist())
-        
-        return list(set(combined_perfumes))  # Remove duplicates
-    except Exception as e:
-        st.error(f"Error loading additional perfume files: {e}")
-        return []
-
-additional_perfumes = load_additional_perfumes()
 
 # Layout for Weather Input
 with st.container():
@@ -110,41 +88,16 @@ with st.container():
         except Exception as e:
             st.error(f"Error reading the file: {e}")
 
-    # Add perfumes manually with live dynamic suggestions
-    st.subheader("📂 Add Perfumes Manually:")
-    manual_perfume_input = st.text_input("Start typing a perfume name:", placeholder="Type here...")
-
-    # Filter suggestions dynamically
-    if manual_perfume_input:
-        suggestions = [
-            perfume for perfume in additional_perfumes
-            if manual_perfume_input.lower() in perfume.lower()
-        ]
-    else:
-        suggestions = additional_perfumes
-
-    # Display suggestions in a live-select dropdown
-    if suggestions:
-        selected_perfume = st.selectbox("Suggestions (live):", options=suggestions, key="live_suggestions")
-        if st.button("Add Selected Perfume"):
-            if selected_perfume not in st.session_state.perfume_list:
-                st.session_state.perfume_list.append(selected_perfume)
-                st.success(f"Perfume '{selected_perfume}' added!")
-            else:
-                st.warning(f"Perfume '{selected_perfume}' is already in the list.")
-    else:
-        st.info("No matching suggestions found.")
-
-    # Add the perfume manually if user enters one directly
-    if st.button("Add Perfume Manually"):
-        if manual_perfume_input:
-            if manual_perfume_input not in st.session_state.perfume_list:
-                st.session_state.perfume_list.append(manual_perfume_input)
-                st.success(f"Perfume '{manual_perfume_input}' added!")
-            else:
-                st.warning(f"Perfume '{manual_perfume_input}' is already in the list.")
+    # Add perfumes manually
+    st.markdown("### Or Add Perfumes Manually:")
+    manual_perfume = st.text_input("Enter a perfume name:", key="manual_perfume_input")
+    if st.button("Add Perfume"):
+        if manual_perfume:
+            st.session_state.perfume_list.append(manual_perfume)
+            st.session_state.perfume_list = list(set(st.session_state.perfume_list))  # Remove duplicates
+            st.success(f"Perfume '{manual_perfume}' added!")
         else:
-            st.warning("Please type a perfume name to add.")
+            st.warning("Please enter a perfume name to add.")
 
     # Display current perfume list
     if st.session_state.perfume_list:
@@ -152,7 +105,7 @@ with st.container():
         for perfume in st.session_state.perfume_list:
             st.write(f"- {perfume}")
     else:
-        st.info("No perfumes added yet. Upload a file or add perfumes manually.")# Display error message if no perfumes are added yet
+        st.info("No perfumes added yet. Upload a file or add perfumes manually.")
 
 st.markdown("---")
 
