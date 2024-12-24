@@ -110,37 +110,41 @@ with st.container():
         except Exception as e:
             st.error(f"Error reading the file: {e}")
 
-    # Add perfumes manually with dynamic suggestions
-    st.markdown("### Or Add Perfumes Manually:")
-    manual_perfume_input = st.text_input("Enter a perfume name:", key="manual_perfume_input", placeholder="Start typing...")
+    # Add perfumes manually with live dynamic suggestions
+    st.subheader("📂 Add Perfumes Manually:")
+    manual_perfume_input = st.text_input("Start typing a perfume name:", placeholder="Type here...")
 
-    # Dynamic suggestions based on input
-    suggestions = [
-        perfume for perfume in additional_perfumes
-        if manual_perfume_input.lower() in perfume.lower()
-    ] if manual_perfume_input else []
+    # Filter suggestions dynamically
+    if manual_perfume_input:
+        suggestions = [
+            perfume for perfume in additional_perfumes
+            if manual_perfume_input.lower() in perfume.lower()
+        ]
+    else:
+        suggestions = additional_perfumes
 
-    if manual_perfume_input and suggestions:
-        selected_perfume = st.selectbox("Suggestions:", options=suggestions)
-        if st.button("Add Suggested Perfume"):
+    # Display suggestions in a live-select dropdown
+    if suggestions:
+        selected_perfume = st.selectbox("Suggestions (live):", options=suggestions, key="live_suggestions")
+        if st.button("Add Selected Perfume"):
             if selected_perfume not in st.session_state.perfume_list:
                 st.session_state.perfume_list.append(selected_perfume)
                 st.success(f"Perfume '{selected_perfume}' added!")
             else:
                 st.warning(f"Perfume '{selected_perfume}' is already in the list.")
     else:
-        st.info("No matching suggestions. Add manually if needed.")
+        st.info("No matching suggestions found.")
 
-    # Add the perfume manually if no match
-    if st.button("Add Entered Perfume"):
+    # Add the perfume manually if user enters one directly
+    if st.button("Add Perfume Manually"):
         if manual_perfume_input:
             if manual_perfume_input not in st.session_state.perfume_list:
                 st.session_state.perfume_list.append(manual_perfume_input)
                 st.success(f"Perfume '{manual_perfume_input}' added!")
             else:
-                st.warning("Perfume already exists in the list.")
+                st.warning(f"Perfume '{manual_perfume_input}' is already in the list.")
         else:
-            st.warning("Please enter a perfume name to add.")
+            st.warning("Please type a perfume name to add.")
 
     # Display current perfume list
     if st.session_state.perfume_list:
@@ -148,7 +152,7 @@ with st.container():
         for perfume in st.session_state.perfume_list:
             st.write(f"- {perfume}")
     else:
-        st.info("No perfumes added yet. Upload a file or add perfumes manually.")
+        st.info("No perfumes added yet. Upload a file or add perfumes manually.")# Display error message if no perfumes are added yet
 
 st.markdown("---")
 
